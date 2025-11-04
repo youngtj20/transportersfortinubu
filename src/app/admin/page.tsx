@@ -139,11 +139,6 @@ export default function AdminLogin() {
             </div>
           </CardContent>
         </Card>
-
-        <div className="mt-8 text-center text-sm text-gray-600">
-          <p>Default admin credentials:</p>
-          <p className="font-mono mt-1">admin@transporters.org / admin123</p>
-        </div>
       </div>
     </div>
   );
