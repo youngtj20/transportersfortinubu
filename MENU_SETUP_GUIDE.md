@@ -15,7 +15,7 @@ Here's the complete list of menu items with icons and links to create in your ad
 | 4 | Structure | /structure | building | _self | ✓ |
 | 5 | Timeline | /timeline | calendar | _self | ✓ |
 | 6 | Contact | /contact | phone | _self | ✓ |
-| 7 | Email | mailto:info@transportersfortinubu2027.org | mail | _blank | ✓ |
+| 7 | Email | mailto:info@transportersfortinubu.ng | mail | _blank | ✓ |
 
 ---
 
@@ -43,7 +43,7 @@ INSERT INTO menu_items (id, label, url, icon, `order`, parentId, published, targ
 ('menu-5', 'Structure', '/structure', 'building', 4, NULL, true, '_self', NOW(), NOW()),
 ('menu-6', 'Timeline', '/timeline', 'calendar', 5, NULL, true, '_self', NOW(), NOW()),
 ('menu-7', 'Contact', '/contact', 'phone', 6, NULL, true, '_self', NOW(), NOW()),
-('menu-8', 'Email', 'mailto:info@transportersfortinubu2027.org', 'mail', 7, NULL, true, '_blank', NOW(), NOW());
+('menu-8', 'Email', 'mailto:info@transportersfortinubu.ng', 'mail', 7, NULL, true, '_blank', NOW(), NOW());
 ```
 
 ---
@@ -131,7 +131,7 @@ INSERT INTO menu_items (id, label, url, icon, `order`, parentId, published, targ
 - This should already exist from your previous setup
 - If not, create it with:
   - **Label**: Email
-  - **URL**: mailto:info@transportersfortinubu2027.org
+  - **URL**: mailto:info@transportersfortinubu.ng
   - **Icon**: mail
   - **Order**: 7
   - **Target**: _blank

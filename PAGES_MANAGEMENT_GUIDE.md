@@ -121,7 +121,7 @@ The website has the following pages that can be managed:
 - Admin Dashboard → Page Management → New Page
 - Title: "Email Us"
 - Slug: "email"
-- Content: "For inquiries, email us at info@transportersfortinubu2027.org"
+- Content: "For inquiries, email us at info@transportersfortinubu.ng"
 - Published: ✓
 - Save
 

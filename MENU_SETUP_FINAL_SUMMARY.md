@@ -32,7 +32,7 @@ I've created comprehensive documentation to help you add all menu items with ico
 | 5 | Structure | /structure | building | 4 |
 | 6 | Timeline | /timeline | calendar | 5 |
 | 7 | Contact | /contact | phone | 6 |
-| 8 | Email | mailto:info@transportersfortinubu2027.org | mail | 7 |
+| 8 | Email | mailto:info@transportersfortinubu.ng | mail | 7 |
 
 ---
 

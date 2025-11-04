@@ -8,7 +8,7 @@ async function main() {
 
   // Create default admin user
   const hashedPassword = await bcrypt.hash('admin123', 10);
-  
+
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@transporters.org' },
     update: {},
@@ -113,7 +113,7 @@ International Development Partners: Our mission extends to working with internat
     },
     {
       key: 'contact_email',
-      value: 'info@transportersfortinubu2027.org',
+      value: 'info@transportersfortinubu.ng',
       type: 'text',
       description: 'Contact email address',
     },

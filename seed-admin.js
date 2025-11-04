@@ -14,7 +14,7 @@ async function main() {
 
   if (!existingAdmin) {
     const hashedPassword = await bcrypt.hash('admin123', 10);
-    
+
     const admin = await prisma.user.create({
       data: {
         email: adminEmail,
@@ -23,7 +23,7 @@ async function main() {
         role: 'admin',
       },
     });
-    
+
     console.log('Created admin user:', admin.email);
   } else {
     console.log('Admin user already exists:', existingAdmin.email);
@@ -233,8 +233,8 @@ async function main() {
   const settings = [
     { key: 'siteTitle', value: 'Transporters for Tinubu 2027', type: 'text', description: 'Website title' },
     { key: 'siteDescription', value: 'Supporting the vision for Nigeria\'s transportation future', type: 'text', description: 'Website description' },
-    { key: 'siteUrl', value: 'https://transportersfortinubu2027.org', type: 'text', description: 'Website URL' },
-    { key: 'contactEmail', value: 'info@transportersfortinubu2027.org', type: 'text', description: 'Contact email' },
+    { key: 'siteUrl', value: 'https://transportersfortinubu.ng', type: 'text', description: 'Website URL' },
+    { key: 'contactEmail', value: 'info@transportersfortinubu.ng', type: 'text', description: 'Contact email' },
     { key: 'contactPhone', value: '+234-800-000-0000', type: 'text', description: 'Contact phone' },
     { key: 'maintenanceMode', value: 'false', type: 'boolean', description: 'Maintenance mode' },
     { key: 'allowRegistration', value: 'false', type: 'boolean', description: 'Allow user registration' },

@@ -52,7 +52,7 @@ I've created comprehensive guides to help you set up all menu items with icons a
 | 5 | Structure | /structure | building | 4 | _self |
 | 6 | Timeline | /timeline | calendar | 5 | _self |
 | 7 | Contact | /contact | phone | 6 | _self |
-| 8 | Email | mailto:info@transportersfortinubu2027.org | mail | 7 | _blank |
+| 8 | Email | mailto:info@transportersfortinubu.ng | mail | 7 | _blank |
 
 ---
 
@@ -246,7 +246,7 @@ Item 7: Contact
 Label: Contact | URL: /contact | Icon: phone | Order: 6
 
 Item 8: Email
-Label: Email | URL: mailto:info@transportersfortinubu2027.org | Icon: mail | Order: 7
+Label: Email | URL: mailto:info@transportersfortinubu.ng | Icon: mail | Order: 7
 ```
 
 ---

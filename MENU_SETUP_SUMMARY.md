@@ -45,7 +45,7 @@ Add 8 menu items to your website with icons and links.
 
 ### 8️⃣ Email
 - **Icon**: ✉️ mail
-- **Link**: mailto:info@transportersfortinubu2027.org
+- **Link**: mailto:info@transportersfortinubu.ng
 - **Order**: 7
 
 ---
@@ -99,7 +99,7 @@ Item 7: Contact
 Label: Contact | URL: /contact | Icon: phone | Order: 6 | Target: _self
 
 Item 8: Email
-Label: Email | URL: mailto:info@transportersfortinubu2027.org | Icon: mail | Order: 7 | Target: _blank
+Label: Email | URL: mailto:info@transportersfortinubu.ng | Icon: mail | Order: 7 | Target: _blank
 ```
 
 ---

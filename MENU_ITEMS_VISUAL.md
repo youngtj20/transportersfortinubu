@@ -186,7 +186,7 @@ mail         ✉️        Mail/Envelope
    └─ Icon: phone
 
 7. ✉️ Email
-   └─ URL: mailto:info@transportersfortinubu2027.org
+   └─ URL: mailto:info@transportersfortinubu.ng
    └─ Icon: mail
 ```
 

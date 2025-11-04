@@ -114,7 +114,7 @@
 | 5 | Structure | /structure | building | 4 |
 | 6 | Timeline | /timeline | calendar | 5 |
 | 7 | Contact | /contact | phone | 6 |
-| 8 | Email | mailto:info@transportersfortinubu2027.org | mail | 7 |
+| 8 | Email | mailto:info@transportersfortinubu.ng | mail | 7 |
 
 ---
 
@@ -243,7 +243,7 @@ Item 4: Mission | /mission | flag | 3
 Item 5: Structure | /structure | building | 4
 Item 6: Timeline | /timeline | calendar | 5
 Item 7: Contact | /contact | phone | 6
-Item 8: Email | mailto:info@transportersfortinubu2027.org | mail | 7
+Item 8: Email | mailto:info@transportersfortinubu.ng | mail | 7
 ```
 
 ---

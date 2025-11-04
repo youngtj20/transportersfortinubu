@@ -5,10 +5,10 @@ import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  MapPin, 
-  Target, 
+import {
+  Users,
+  MapPin,
+  Target,
   TrendingUp,
   ArrowRight,
   Star,
@@ -36,7 +36,7 @@ export default function HomePage() {
     const increment = duration / steps;
 
     const timer = setInterval(() => {
-      setStats(prevStats => 
+      setStats(prevStats =>
         prevStats.map(stat => {
           const progress = Math.min(stat.value + (stat.target / steps), stat.target);
           return { ...stat, value: Math.floor(progress) };
@@ -106,9 +106,9 @@ export default function HomePage() {
       <section className="relative pt-20 pb-0 px-0 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="/infrastructure.jpg" 
-            alt="Nigeria Port Infrastructure" 
+          <img
+            src="/infrastructure.jpg"
+            alt="Nigeria Port Infrastructure"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/50"></div>
@@ -121,17 +121,17 @@ export default function HomePage() {
               <Star className="w-4 h-4 mr-2" />
               Supporting Progressive Leadership
             </Badge>
-            
+
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
               Transporters for
               <span className="block text-green-400">Tinubu 2027</span>
             </h1>
-            
+
             <p className="text-lg sm:text-xl text-gray-100 mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-              United in supporting President Bola Ahmed Tinubu's vision for a transformed 
+              United in supporting President Bola Ahmed Tinubu's vision for a transformed
               transportation sector that drives Nigeria's economic growth and development.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg shadow-lg">
                 <Link href="/about">
@@ -222,7 +222,7 @@ export default function HomePage() {
             Be Part of the Movement
           </h2>
           <p className="text-xl text-green-50 mb-8 leading-relaxed">
-            Join thousands of transport workers across Nigeria in supporting a vision 
+            Join thousands of transport workers across Nigeria in supporting a vision
             that promises progress, development, and prosperity for all.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -296,7 +296,7 @@ export default function HomePage() {
                 Supporting progressive leadership for Nigeria's transportation future.
               </p>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
@@ -306,7 +306,7 @@ export default function HomePage() {
                 <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold mb-4">Get Involved</h3>
               <ul className="space-y-2">
@@ -315,7 +315,7 @@ export default function HomePage() {
                 <li><Link href="/admin" className="text-gray-400 hover:text-white transition-colors">Admin Portal</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
               <ul className="space-y-2 text-gray-400">
@@ -325,12 +325,12 @@ export default function HomePage() {
                 </li>
                 <li className="flex items-center">
                   <Calendar className="h-4 w-4 mr-2" />
-                  info@transportersfortinubu2027.org
+                  info@transportersfortinubu.ng
                 </li>
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 Transporters for Tinubu 2027. All rights reserved.</p>
           </div>

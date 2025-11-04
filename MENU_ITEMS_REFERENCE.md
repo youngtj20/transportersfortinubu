@@ -75,7 +75,7 @@ Published: ✓
 ### Menu Item 8: Email
 ```
 Label:     Email
-URL:       mailto:info@transportersfortinubu2027.org
+URL:       mailto:info@transportersfortinubu.ng
 Icon:      mail
 Order:     7
 Target:    _blank
@@ -111,7 +111,7 @@ email    → ✉️ (Mail/Envelope icon - same as mail)
 | 5 | Structure | /structure | building | 4 | _self |
 | 6 | Timeline | /timeline | calendar | 5 | _self |
 | 7 | Contact | /contact | phone | 6 | _self |
-| 8 | Email | mailto:info@transportersfortinubu2027.org | mail | 7 | _blank |
+| 8 | Email | mailto:info@transportersfortinubu.ng | mail | 7 | _blank |
 
 ---
 
@@ -125,7 +125,7 @@ Mission    → /mission
 Structure  → /structure
 Timeline   → /timeline
 Contact    → /contact
-Email      → mailto:info@transportersfortinubu2027.org
+Email      → mailto:info@transportersfortinubu.ng
 ```
 
 ---
@@ -234,7 +234,7 @@ INSERT INTO menu_items (id, label, url, icon, `order`, parentId, published, targ
 ('menu-structure', 'Structure', '/structure', 'building', 4, NULL, true, '_self', NOW(), NOW()),
 ('menu-timeline', 'Timeline', '/timeline', 'calendar', 5, NULL, true, '_self', NOW(), NOW()),
 ('menu-contact', 'Contact', '/contact', 'phone', 6, NULL, true, '_self', NOW(), NOW()),
-('menu-email', 'Email', 'mailto:info@transportersfortinubu2027.org', 'mail', 7, NULL, true, '_blank', NOW(), NOW());
+('menu-email', 'Email', 'mailto:info@transportersfortinubu.ng', 'mail', 7, NULL, true, '_blank', NOW(), NOW());
 ```
 
 ---

@@ -8,9 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Mail, 
-  Phone, 
+import {
+  Mail,
+  Phone,
   MapPin,
   Send,
   Users,
@@ -46,13 +46,13 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     setIsSubmitting(false);
     setIsSubmitted(true);
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false);
@@ -71,7 +71,7 @@ export default function ContactPage() {
     {
       icon: <Mail className="h-6 w-6 text-green-600" />,
       title: 'Email',
-      details: ['info@transportersfortinubu2027.org', 'support@transportersfortinubu2027.org'],
+      details: ['info@transportersfortinubu.ng', 'support@transportersfortinubu.ng'],
       description: 'General inquiries and support'
     },
     {
@@ -138,14 +138,14 @@ export default function ContactPage() {
               <MessageSquare className="w-4 h-4 mr-2" />
               Get in Touch
             </Badge>
-            
+
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
               Contact
               <span className="block text-green-600">Transporters for Tinubu 2027</span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Connect with us to join the movement, ask questions, or explore partnership opportunities. 
+              Connect with us to join the movement, ask questions, or explore partnership opportunities.
               Together, we can transform Nigeria's transportation sector.
             </p>
           </div>
@@ -311,8 +311,8 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={isSubmitting}
                     className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg"
                   >
@@ -366,7 +366,7 @@ export default function ContactPage() {
             Ready to Make a Difference?
           </h2>
           <p className="text-xl text-green-50 mb-8 leading-relaxed">
-            Join thousands of transport workers across Nigeria in supporting the vision 
+            Join thousands of transport workers across Nigeria in supporting the vision
             for a transformed transportation sector and prosperous future.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

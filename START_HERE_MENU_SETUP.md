@@ -26,7 +26,7 @@ http://localhost:3000/admin/dashboard
 | 5 | Structure | /structure | building | 4 |
 | 6 | Timeline | /timeline | calendar | 5 |
 | 7 | Contact | /contact | phone | 6 |
-| 8 | Email | mailto:info@transportersfortinubu2027.org | mail | 7 |
+| 8 | Email | mailto:info@transportersfortinubu.ng | mail | 7 |
 
 ### 4. For Each Item:
 - Click **"Add Menu Item"**
@@ -204,7 +204,7 @@ After completing this, your website will have:
 4. 🏢 Structure → /structure
 5. 📅 Timeline → /timeline
 6. ☎️ Contact → /contact
-7. ✉️ Email → mailto:info@transportersfortinubu2027.org
+7. ✉️ Email → mailto:info@transportersfortinubu.ng
 ```
 
 ---

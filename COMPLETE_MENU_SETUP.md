@@ -17,7 +17,7 @@ You will create 8 menu items with icons and links. This guide shows you exactly 
 | 4 | Structure | 🏢 building | /structure |
 | 5 | Timeline | 📅 calendar | /timeline |
 | 6 | Contact | ☎️ phone | /contact |
-| 7 | Email | ✉️ mail | mailto:info@transportersfortinubu2027.org |
+| 7 | Email | ✉️ mail | mailto:info@transportersfortinubu.ng |
 
 ---
 
@@ -167,7 +167,7 @@ Published: ✓ (CHECK THIS BOX)
 **Step 2:** Fill in the form:
 ```
 Label:     Email
-URL:       mailto:info@transportersfortinubu2027.org
+URL:       mailto:info@transportersfortinubu.ng
 Icon:      mail
 Order:     7
 Target:    _blank
@@ -355,7 +355,7 @@ Copy these values exactly:
 | Structure | /structure | building | 4 | _self |
 | Timeline | /timeline | calendar | 5 | _self |
 | Contact | /contact | phone | 6 | _self |
-| Email | mailto:info@transportersfortinubu2027.org | mail | 7 | _blank |
+| Email | mailto:info@transportersfortinubu.ng | mail | 7 | _blank |
 
 ---
 
