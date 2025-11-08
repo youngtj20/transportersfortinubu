@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  FileText, 
-  Users, 
-  Settings, 
+import {
+  FileText,
+  Users,
+  Settings,
   LogOut,
   Calendar,
   Home,
@@ -136,8 +136,8 @@ export default function AdminDashboardLayout({
                     href={item.href}
                     className={`
                       flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                      ${isActive 
-                        ? 'bg-green-100 text-green-700 border-r-2 border-green-600' 
+                      ${isActive
+                        ? 'bg-green-100 text-green-700 border-r-2 border-green-600'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                       }
                     `}
@@ -152,16 +152,16 @@ export default function AdminDashboardLayout({
           </div>
         </aside>
 
-        {/* Overlay for mobile */}
+        {/* Overlay for mobile - ensure it's properly hidden on larger screens */}
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-0">
+        {/* Main Content - fixed margin issue */}
+        <main className="flex-1 lg:ml-64">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </div>

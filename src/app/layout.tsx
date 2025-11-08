@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { SessionProviderWrapper } from "@/components/providers/session-provider";
+import { FaviconLoader } from "@/components/FaviconLoader";
+import { JoinMovementForm } from "@/components/JoinMovementForm";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +22,10 @@ export const metadata: Metadata = {
   keywords: ["Transporters for Tinubu 2027", "Nigeria", "Transportation", "Good Governance", "Campaign", "2027 Elections"],
   authors: [{ name: "Transporters for Tinubu 2027" }],
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { rel: "icon", url: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", url: "/apple-touch-icon.png" },
+    ],
   },
   openGraph: {
     title: "Transporters for Tinubu 2027",
@@ -46,8 +51,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        <FaviconLoader />
         <SessionProviderWrapper>
           {children}
+          <JoinMovementForm />
           <Toaster />
         </SessionProviderWrapper>
       </body>

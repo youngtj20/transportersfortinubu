@@ -77,7 +77,7 @@ export default function ContactPage() {
     {
       icon: <Phone className="h-6 w-6 text-green-600" />,
       title: 'Phone',
-      details: ['+234-800-000-0000 (Hotline)', '+234-900-000-0000 (Office)'],
+      details: ['+2347033001031 (Hotline)', '+2347033001031 (Office)'],
       description: 'Monday to Friday, 9AM - 6PM'
     },
     {
@@ -89,12 +89,12 @@ export default function ContactPage() {
   ];
 
   const regionalOffices = [
-    { city: 'Lagos', address: 'Ikoyi, Lagos State', phone: '+234-801-000-0001' },
-    { city: 'Kano', address: 'Kano City, Kano State', phone: '+234-802-000-0002' },
-    { city: 'Port Harcourt', address: 'Rivers State', phone: '+234-803-000-0003' },
-    { city: 'Enugu', address: 'Enugu State', phone: '+234-804-000-0004' },
-    { city: 'Ibadan', address: 'Oyo State', phone: '+234-805-000-0005' },
-    { city: 'Abuja', address: 'FCT', phone: '+234-806-000-0006' }
+    { city: 'Lagos', address: 'Ikoyi, Lagos State', phone: '+2347033001031' },
+    { city: 'Kano', address: 'Kano City, Kano State', phone: '+2347033001031' },
+    { city: 'Port Harcourt', address: 'Rivers State', phone: '+2347033001031' },
+    { city: 'Enugu', address: 'Enugu State', phone: '+2347033001031' },
+    { city: 'Ibadan', address: 'Oyo State', phone: '+2347033001031' },
+    { city: 'Abuja', address: 'FCT', phone: '+2347033001031' }
   ];
 
   const membershipTypes = [
@@ -376,7 +376,7 @@ export default function ContactPage() {
               </a>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-green-600 px-8 py-4 text-lg">
-              <a href="tel:+234-800-000-0000">
+              <a href="tel:+2347033001031">
                 Call Us Now
               </a>
             </Button>

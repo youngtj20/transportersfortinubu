@@ -148,3 +148,18 @@ model MenuItem {
   
   @@map("menu_items")
 }
+
+model MovementMember {
+  id                String   @id @default(cuid())
+  fullName          String
+  gender            String   // Male, Female, Other
+  email             String?
+  phoneNumber       String
+  stateOfOrigin     String
+  lga               String
+  modesOfTransport  String   @db.LongText // JSON array of selected modes
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("movement_members")
+}

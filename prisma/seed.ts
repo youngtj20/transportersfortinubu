@@ -123,6 +123,12 @@ International Development Partners: Our mission extends to working with internat
       type: 'text',
       description: 'Contact phone number',
     },
+    {
+      key: 'enableJoinMovementPopup',
+      value: 'true',
+      type: 'boolean',
+      description: 'Enable the join movement popup form on page load',
+    },
   ];
 
   for (const settingData of settings) {
