@@ -5,19 +5,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { 
   Plus, 
   Edit, 
   Trash2, 
-  Save, 
   Search,
-  Filter,
   Calendar,
-  User
+  User,
+  Eye,
+  Loader2,
+  ArrowLeft,
+  Save
 } from 'lucide-react';
+import { AdvancedPostEditor } from '@/components/admin/AdvancedPostEditor';
+import Link from 'next/link';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import {
   Dialog,
   DialogContent,
@@ -60,7 +64,9 @@ export default function PostsManagement() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterCategory, setFilterCategory] = useState('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -92,32 +98,42 @@ export default function PostsManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError('');
+    setIsSubmitting(true);
     
     try {
-      const url = editingPost ? `/api/posts/${editingPost.id}` : '/api/posts';
-      const method = editingPost ? 'PUT' : 'POST';
+      const url = editingPostId ? `/api/posts/${editingPostId}` : '/api/posts';
+      const method = editingPostId ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         await fetchPosts();
         setIsCreateDialogOpen(false);
-        setEditingPost(null);
+        setEditingPostId(null);
         resetForm();
+        setSubmitError('');
+      } else {
+        const error = await response.json();
+        setSubmitError(error.error || 'Failed to save post');
       }
     } catch (error) {
       console.error('Error saving post:', error);
+      setSubmitError('An error occurred while saving the post');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleEdit = (post: Post) => {
-    setEditingPost(post);
+    setEditingPostId(post.id);
     setFormData({
       title: post.title,
       slug: post.slug,
@@ -191,120 +207,144 @@ export default function PostsManagement() {
           <h2 className="text-2xl font-bold">Blog Posts</h2>
           <p className="text-gray-600">Manage blog posts and news articles</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => { resetForm(); setEditingPost(null); }}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Post
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingPost ? 'Edit Post' : 'Create New Post'}
-              </DialogTitle>
-              <DialogDescription>
-                {editingPost ? 'Edit the blog post details and content.' : 'Create a new blog post for your website.'}
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="title">Title *</Label>
-                  <Input
-                    id="title"
-                    value={formData.title}
-                    onChange={(e) => {
-                      setFormData(prev => ({ 
-                        ...prev, 
-                        title: e.target.value,
-                        slug: generateSlug(e.target.value)
-                      }));
-                    }}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="slug">Slug *</Label>
-                  <Input
-                    id="slug"
-                    value={formData.slug}
-                    onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                    required
-                  />
-                </div>
-              </div>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/admin/dashboard/posts/enhanced">
+              Enhanced Editor
+            </Link>
+          </Button>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => { resetForm(); setEditingPostId(null); }}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Post
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingPostId ? 'Edit Post' : 'Create New Post'}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {editingPostId ? 'Edit the blog post details and content.' : 'Create a new blog post for your website.'}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="title">Title *</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => {
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            title: e.target.value,
+                            slug: generateSlug(e.target.value)
+                          }));
+                        }}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="slug">Slug *</Label>
+                      <Input
+                        id="slug"
+                        value={formData.slug}
+                        onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="category">Category</Label>
-                  <Input
-                    id="category"
-                    value={formData.category}
-                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="tags">Tags (comma-separated)</Label>
-                  <Input
-                    id="tags"
-                    value={formData.tags}
-                    onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="excerpt">Excerpt</Label>
-                <Textarea
-                  id="excerpt"
-                  value={formData.excerpt}
-                  onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
-                  rows={3}
-                />
-              </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="category">Category</Label>
+                      <Input
+                        id="category"
+                        value={formData.category}
+                        onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="tags">Tags (comma-separated)</Label>
+                      <Input
+                        id="tags"
+                        value={formData.tags}
+                        onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="excerpt">Excerpt</Label>
+                    <Textarea
+                      id="excerpt"
+                      value={formData.excerpt}
+                      onChange={(e) => setFormData(prev => ({ ...prev, excerpt: e.target.value }))}
+                      rows={3}
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="content">Content</Label>
-                <Textarea
-                  id="content"
-                  value={formData.content}
-                  onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-                  rows={10}
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="content">Content</Label>
+                    <Textarea
+                      id="content"
+                      value={formData.content}
+                      onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                      rows={10}
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="featuredImage">Featured Image URL</Label>
-                <Input
-                  id="featuredImage"
-                  value={formData.featuredImage}
-                  onChange={(e) => setFormData(prev => ({ ...prev, featuredImage: e.target.value }))}
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="featuredImage">Featured Image URL</Label>
+                    <Input
+                      id="featuredImage"
+                      value={formData.featuredImage}
+                      onChange={(e) => setFormData(prev => ({ ...prev, featuredImage: e.target.value }))}
+                    />
+                  </div>
 
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="published"
-                  checked={formData.published}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, published: checked }))}
-                />
-                <Label htmlFor="published">Published</Label>
-              </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="published"
+                      checked={formData.published}
+                      onChange={(e) => setFormData(prev => ({ ...prev, published: e.target.checked }))}
+                      className="w-4 h-4"
+                    />
+                    <Label htmlFor="published" className="cursor-pointer">Published</Label>
+                  </div>
 
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  <Save className="h-4 w-4 mr-2" />
-                  {editingPost ? 'Update' : 'Create'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
+                  {submitError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                      {submitError}
+                    </div>
+                  )}
+
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} disabled={isSubmitting}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {editingPostId ? 'Updating...' : 'Creating...'}
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" />
+                          {editingPostId ? 'Update' : 'Create'}
+                        </>
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
 
       {/* Filters */}
       <div className="flex gap-4">

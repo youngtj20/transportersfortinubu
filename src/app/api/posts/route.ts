@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getSessionFromRequest } from '@/lib/auth-utils'
 import { db } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
@@ -8,6 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const published = searchParams.get('published')
     const category = searchParams.get('category')
+    const slug = searchParams.get('slug')
 
     const where: any = {}
     
@@ -19,6 +19,10 @@ export async function GET(request: NextRequest) {
     
     if (category) {
       where.category = category
+    }
+
+    if (slug) {
+      where.slug = slug
     }
 
     const posts = await db.post.findMany({
@@ -45,14 +49,21 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getSessionFromRequest()
     
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    console.log('POST Session:', JSON.stringify(session, null, 2))
+    console.log('POST User:', JSON.stringify(session?.user, null, 2))
+    
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized - No session' }, { status: 401 })
+    }
+
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized - Not admin' }, { status: 401 })
     }
 
     const body = await request.json()
-    const { title, slug, content, excerpt, featuredImage, published, category, tags } = body
+    const { title, slug, content, excerpt, featuredImage, published, category, tags, galleryImages } = body
 
     if (!title || !slug) {
       return NextResponse.json({ error: 'Title and slug are required' }, { status: 400 })
@@ -77,6 +88,7 @@ export async function POST(request: NextRequest) {
         published: published || false,
         category,
         tags,
+        galleryImages: galleryImages ? JSON.stringify(galleryImages) : null,
         authorId: session.user.id,
       },
       include: {

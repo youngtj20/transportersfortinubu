@@ -204,7 +204,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/admin/dashboard/pages')}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pages</CardTitle>
@@ -227,6 +227,19 @@ export default function AdminDashboard() {
               <div className="text-2xl font-bold">{stats.posts}</div>
               <p className="text-xs text-muted-foreground">
                 Manage posts
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/admin/dashboard/gallery')}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Gallery</CardTitle>
+              <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">-</div>
+              <p className="text-xs text-muted-foreground">
+                Event galleries
               </p>
             </CardContent>
           </Card>
@@ -267,7 +280,7 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <Button variant="outline" className="h-20 flex-col" onClick={() => router.push('/admin/dashboard/pages')}>
                 <Plus className="h-6 w-6 mb-2" />
                 New Page
@@ -275,6 +288,10 @@ export default function AdminDashboard() {
               <Button variant="outline" className="h-20 flex-col" onClick={() => router.push('/admin/dashboard/posts')}>
                 <Plus className="h-6 w-6 mb-2" />
                 New Post
+              </Button>
+              <Button variant="outline" className="h-20 flex-col" onClick={() => router.push('/admin/dashboard/gallery')}>
+                <ImageIcon className="h-6 w-6 mb-2" />
+                New Gallery
               </Button>
               <Button variant="outline" className="h-20 flex-col" onClick={() => router.push('/admin/dashboard/events')}>
                 <Plus className="h-6 w-6 mb-2" />

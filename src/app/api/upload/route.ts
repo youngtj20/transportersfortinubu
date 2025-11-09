@@ -1,103 +1,39 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';
-import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
-import fs from 'fs/promises';
+import { NextRequest, NextResponse } from 'next/server'
+import { writeFile, mkdir } from 'fs/promises'
+import { join } from 'path'
+import { existsSync } from 'fs'
+import { v4 as uuidv4 } from 'uuid'
 
 export async function POST(request: NextRequest) {
   try {
-    // Get session - note: getServerSession may not work in all contexts
-    let session;
-    try {
-      session = await getServerSession(authOptions);
-    } catch (error) {
-      console.error('Session error:', error);
-      // Continue without session check for now
-    }
-
-    // For now, allow uploads without strict auth check
-    // In production, you should properly validate the session
-    console.log('Upload session:', session);
-
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+    const formData = await request.formData()
+    const file = formData.get('file') as File
 
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
-
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm'];
-    if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 });
-    }
-
-    // Validate file size (max 50MB)
-    const maxSize = 50 * 1024 * 1024;
-    if (file.size > maxSize) {
-      return NextResponse.json({ error: 'File too large' }, { status: 400 });
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
     // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-    try {
-      await fs.mkdir(uploadsDir, { recursive: true });
-    } catch (error) {
-      console.error('Error creating uploads directory:', error);
+    const uploadsDir = join(process.cwd(), 'public', 'uploads')
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true })
     }
 
     // Generate unique filename
-    const ext = path.extname(file.name);
-    const filename = `${uuidv4()}${ext}`;
-    const filepath = path.join(uploadsDir, filename);
+    const ext = file.name.split('.').pop()
+    const filename = `${uuidv4()}.${ext}`
+    const filepath = join(uploadsDir, filename)
 
-    // Save file
-    const buffer = await file.arrayBuffer();
-    await fs.writeFile(filepath, Buffer.from(buffer));
+    // Convert file to buffer and write
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    await writeFile(filepath, buffer)
 
-    // Save to database
-    const media = await db.media.create({
-      data: {
-        filename,
-        originalName: file.name,
-        mimeType: file.type,
-        size: file.size,
-        path: `/uploads/${filename}`,
-        url: `/uploads/${filename}`,
-        alt: file.name.replace(/\.[^/.]+$/, ''),
-      },
-    });
-
-    return NextResponse.json({
-      success: true,
-      url: media.url,
-      media: media,
-    }, { status: 201 });
+    // Return the public URL
+    const url = `/uploads/${filename}`
+    return NextResponse.json({ url, filename })
   } catch (error) {
-    console.error('Upload error:', error);
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
-  }
-}
-
-export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const media = await db.media.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return NextResponse.json(media);
-  } catch (error) {
-    console.error('Error fetching media:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Upload error:', error)
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
   }
 }

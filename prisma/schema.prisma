@@ -33,13 +33,14 @@ model Post {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
-  content     String?
+  content     String?  @db.LongText
   excerpt     String?
   featuredImage String?
   published   Boolean  @default(false)
   authorId    String
   category    String?
   tags        String?
+  galleryImages String?  @db.LongText // JSON array of gallery image URLs
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -162,4 +163,19 @@ model MovementMember {
   updatedAt         DateTime @updatedAt
   
   @@map("movement_members")
+}
+
+model EventGallery {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?  @db.LongText
+  location    String?
+  eventDate   DateTime?
+  images      String   @db.LongText // JSON array of image URLs
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("event_galleries")
 }

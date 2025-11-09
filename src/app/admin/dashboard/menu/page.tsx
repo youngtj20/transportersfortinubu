@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Edit, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Edit, Trash2, ChevronDown, ChevronUp, Plus as PlusIcon } from 'lucide-react';
 
 interface MenuItem {
   id: string;
@@ -41,6 +41,7 @@ export default function MenuManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [parentMenuId, setParentMenuId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     label: '',
     url: '',
@@ -175,17 +176,25 @@ export default function MenuManagement() {
     });
   };
 
+  const handleAddSubmenu = (parentId: string) => {
+    setParentMenuId(parentId);
+    resetForm();
+    setFormData(prev => ({ ...prev, parentId }));
+    setEditingItem(null);
+    setIsCreateDialogOpen(true);
+  };
+
   const renderMenuItems = (items: MenuItem[], level = 0) => {
     return items.map((item) => (
       <div key={item.id}>
         <div
           className={`flex items-center justify-between p-4 border rounded-lg mb-2 ${
-            level > 0 ? 'ml-8 bg-gray-50' : 'bg-white'
+            level > 0 ? 'ml-8 bg-blue-50 border-blue-200' : 'bg-white'
           }`}
         >
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              {level > 0 && <span className="text-gray-400">└─</span>}
+              {level > 0 && <span className="text-blue-400 font-bold">└─</span>}
               <div>
                 <p className="font-medium">{item.label}</p>
                 <p className="text-sm text-gray-600">{item.url}</p>
@@ -196,11 +205,22 @@ export default function MenuManagement() {
             <Badge variant={item.published ? 'default' : 'secondary'}>
               {item.published ? 'Published' : 'Draft'}
             </Badge>
+            {level === 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleAddSubmenu(item.id)}
+                title="Add submenu"
+              >
+                <PlusIcon className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => handleMoveUp(item)}
               disabled={item.order === 0}
+              title="Move up"
             >
               <ChevronUp className="h-4 w-4" />
             </Button>
@@ -208,6 +228,7 @@ export default function MenuManagement() {
               variant="ghost"
               size="sm"
               onClick={() => handleMoveDown(item)}
+              title="Move down"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
@@ -215,6 +236,7 @@ export default function MenuManagement() {
               variant="ghost"
               size="sm"
               onClick={() => handleEdit(item)}
+              title="Edit"
             >
               <Edit className="h-4 w-4" />
             </Button>
@@ -222,6 +244,7 @@ export default function MenuManagement() {
               variant="ghost"
               size="sm"
               onClick={() => handleDelete(item.id)}
+              title="Delete"
             >
               <Trash2 className="h-4 w-4 text-red-600" />
             </Button>

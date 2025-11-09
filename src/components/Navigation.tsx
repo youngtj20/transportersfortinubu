@@ -19,7 +19,14 @@ interface MenuItem {
 
 const defaultNavigation = [
   { name: 'Home', href: '/', icon: <Home className="h-5 w-5" /> },
-  { name: 'About Us', href: '/about', icon: <Users className="h-5 w-5" /> },
+  { 
+    name: 'About Us', 
+    href: '/about', 
+    icon: <Users className="h-5 w-5" />,
+    submenu: [
+      { name: 'Blog', href: '/blog', icon: <Mail className="h-5 w-5" /> },
+    ]
+  },
   { name: 'Vision', href: '/vision', icon: <Target className="h-5 w-5" /> },
   { name: 'Mission', href: '/mission', icon: <Flag className="h-5 w-5" /> },
   { name: 'Structure', href: '/structure', icon: <Building className="h-5 w-5" /> },
@@ -56,6 +63,7 @@ export default function Navigation() {
     instagram: '',
     linkedin: '',
   });
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMenuItems();
@@ -76,7 +84,13 @@ export default function Navigation() {
         // Filter only published items and sort by order
         const publishedItems = data
           .filter((item: MenuItem) => item.published)
-          .sort((a: MenuItem, b: MenuItem) => a.order - b.order);
+          .sort((a: MenuItem, b: MenuItem) => a.order - b.order)
+          .map((item: MenuItem) => ({
+            ...item,
+            children: item.children
+              ?.filter((child: MenuItem) => child.published)
+              .sort((a: MenuItem, b: MenuItem) => a.order - b.order) || [],
+          }));
         setMenuItems(publishedItems);
       } else {
         setMenuItems([]);
@@ -162,6 +176,38 @@ export default function Navigation() {
               const label = 'label' in item ? item.label : item.name;
               const href = 'url' in item ? item.url : item.href;
               const target = 'target' in item ? item.target : '_self';
+              const submenu = (item as any).submenu || (item as any).children;
+              
+              if (submenu && submenu.length > 0) {
+                return (
+                  <div key={label} className="relative group">
+                    <button className="text-gray-700 hover:text-green-600 px-3 py-2 text-sm font-medium transition-colors duration-200 relative flex items-center">
+                      {label}
+                      <ChevronRight className="h-4 w-4 ml-1 group-hover:rotate-90 transition-transform duration-200" />
+                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200"></span>
+                    </button>
+                    <div className="absolute left-0 mt-0 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 py-2 z-50">
+                      {submenu.map((subitem: any) => {
+                        const subLabel = 'label' in subitem ? subitem.label : subitem.name;
+                        const subHref = 'url' in subitem ? subitem.url : subitem.href;
+                        const subTarget = 'target' in subitem ? subitem.target : '_self';
+                        return (
+                          <Link
+                            key={subLabel}
+                            href={subHref}
+                            target={subTarget}
+                            rel={subTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                          >
+                            {subLabel}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              }
+              
               return (
                 <Link
                   key={label}
@@ -230,6 +276,53 @@ export default function Navigation() {
                     const href = isDbItem ? item.url : (item as any).href;
                     const target = isDbItem ? item.target : '_self';
                     const icon = isDbItem ? getIconComponent(item.icon) : (item as any).icon;
+                    const submenu = (item as any).submenu || (item as any).children;
+                    const isExpanded = expandedMenu === label;
+
+                    if (submenu && submenu.length > 0) {
+                      return (
+                        <div key={label}>
+                          <button
+                            onClick={() => setExpandedMenu(isExpanded ? null : label)}
+                            className="w-full group flex items-center justify-between p-4 rounded-xl hover:bg-green-50 transition-all duration-200 border border-transparent hover:border-green-100"
+                          >
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 group-hover:bg-green-100 transition-colors duration-200">
+                                <div className="text-gray-600 group-hover:text-green-600 transition-colors duration-200">
+                                  {icon}
+                                </div>
+                              </div>
+                              <span className="text-gray-900 font-medium group-hover:text-green-600 transition-colors duration-200">
+                                {label}
+                              </span>
+                            </div>
+                            <ChevronRight className={`h-4 w-4 text-gray-400 group-hover:text-green-600 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                          </button>
+                          {isExpanded && (
+                            <div className="pl-4 space-y-1 mt-1">
+                              {submenu.map((subitem: any) => {
+                                const subLabel = 'label' in subitem ? subitem.label : subitem.name;
+                                const subHref = 'url' in subitem ? subitem.url : subitem.href;
+                                const subTarget = 'target' in subitem ? subitem.target : '_self';
+                                return (
+                                  <Link
+                                    key={subLabel}
+                                    href={subHref}
+                                    target={subTarget}
+                                    rel={subTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                                    className="block p-3 rounded-lg text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200"
+                                    onClick={() => setIsOpen(false)}
+                                  >
+                                    {subLabel}
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
                     return (
                       <Link
                         key={label}
