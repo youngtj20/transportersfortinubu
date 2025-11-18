@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { SimpleRichEditor } from './SimpleRichEditor';
 import {
   Plus,
   Trash2,
@@ -19,17 +20,6 @@ import {
   Image as ImageIcon,
   Video,
   Grid,
-  Bold,
-  Italic,
-  Underline,
-  List,
-  Link2,
-  Code,
-  Heading1,
-  Heading2,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
 } from 'lucide-react';
 import {
   Dialog,
@@ -161,16 +151,15 @@ export function AdvancedPostEditor() {
     
     let html = '';
     if (type === 'image') {
-      html = `<img src="${url}" alt="Image" style="max-width: 100%; height: auto; margin: 10px 0;" />`;
+      html = `<img src="${url}" alt="Image" style="max-width: 100%; height: auto; margin: 10px 0; border-radius: 8px;" />`;
     } else {
-      html = `<video width="100%" height="auto" controls style="margin: 10px 0;"><source src="${url}" type="video/mp4"></video>`;
+      html = `<video width="100%" height="auto" controls style="margin: 10px 0; border-radius: 8px;"><source src="${url}" type="video/mp4"></video>`;
     }
     
-    editorRef.current.innerHTML += html;
-    setFormData((prev) => ({
-      ...prev,
-      content: editorRef.current?.innerHTML || prev.content,
-    }));
+    // Create a new paragraph and insert the media
+    const paragraph = document.createElement('p');
+    paragraph.innerHTML = html;
+    editorRef.current.appendChild(paragraph);
   };
 
   const setFeaturedImage = (url: string) => {
@@ -206,6 +195,11 @@ export function AdvancedPostEditor() {
       return;
     }
 
+    if (!formData.content.trim()) {
+      setSaveError('Content cannot be empty');
+      return;
+    }
+
     setIsSaving(true);
     setSaveError('');
 
@@ -215,9 +209,10 @@ export function AdvancedPostEditor() {
 
       const dataToSend = {
         ...formData,
-        content: editorRef.current?.innerHTML || formData.content,
         galleryImages,
       };
+
+      console.log('Saving post with content:', dataToSend.content);
 
       const response = await fetch(url, {
         method,
@@ -274,10 +269,15 @@ export function AdvancedPostEditor() {
       galleryImages: parsedGalleryImages,
     });
     setGalleryImages(parsedGalleryImages);
-    if (editorRef.current) {
-      editorRef.current.innerHTML = post.content;
-    }
     setIsDialogOpen(true);
+    
+    // Set editor content after dialog opens (use setTimeout to ensure DOM is ready)
+    setTimeout(() => {
+      if (editorRef.current) {
+        editorRef.current.innerHTML = post.content || '';
+        console.log('Editor content set:', post.content);
+      }
+    }, 100);
   };
 
   const handleDelete = async (id: string) => {
@@ -405,101 +405,25 @@ export function AdvancedPostEditor() {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-semibold mb-2 block">Rich Text Editor</Label>
-                  
-                  {/* Toolbar */}
-                  <div className="bg-gray-100 border border-gray-300 rounded-t-lg p-3 flex flex-wrap gap-2">
-                    <button
-                      onClick={() => applyFormat('bold')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Bold"
-                    >
-                      <Bold className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('italic')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Italic"
-                    >
-                      <Italic className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('underline')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Underline"
-                    >
-                      <Underline className="h-4 w-4" />
-                    </button>
-                    <div className="border-l border-gray-300"></div>
-                    <button
-                      onClick={() => applyFormat('formatBlock', '<h1>')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Heading 1"
-                    >
-                      <Heading1 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('formatBlock', '<h2>')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Heading 2"
-                    >
-                      <Heading2 className="h-4 w-4" />
-                    </button>
-                    <div className="border-l border-gray-300"></div>
-                    <button
-                      onClick={() => applyFormat('insertUnorderedList')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Bullet List"
-                    >
-                      <List className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('justifyLeft')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Align Left"
-                    >
-                      <AlignLeft className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('justifyCenter')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Align Center"
-                    >
-                      <AlignCenter className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('justifyRight')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Align Right"
-                    >
-                      <AlignRight className="h-4 w-4" />
-                    </button>
-                    <div className="border-l border-gray-300"></div>
-                    <button
-                      onClick={() => applyFormat('createLink', prompt('Enter URL:') || '')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Link"
-                    >
-                      <Link2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => applyFormat('formatBlock', '<pre>')}
-                      className="p-2 hover:bg-gray-200 rounded transition"
-                      title="Code"
-                    >
-                      <Code className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  {/* Editor */}
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    className="w-full min-h-96 p-4 border border-t-0 border-gray-300 rounded-b-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white"
-                    style={{
-                      wordWrap: 'break-word',
-                      overflowWrap: 'break-word',
+                  <Label className="text-sm font-semibold mb-2 block">Rich Text Editor (Advanced)</Label>
+                  <SimpleRichEditor
+                    value={formData.content}
+                    onChange={(content) =>
+                      setFormData((prev) => ({ ...prev, content }))
+                    }
+                    placeholder="Start typing your post content..."
+                    onImageUpload={async (file) => {
+                      const formDataToSend = new FormData();
+                      formDataToSend.append('file', file);
+                      const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formDataToSend,
+                      });
+                      if (response.ok) {
+                        const data = await response.json();
+                        return data.url;
+                      }
+                      throw new Error('Upload failed');
                     }}
                   />
                 </div>

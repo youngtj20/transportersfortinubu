@@ -7,8 +7,9 @@ import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, User, ArrowLeft, Share2 } from 'lucide-react';
+import { Calendar, User, ArrowLeft } from 'lucide-react';
 import Navigation from '@/components/Navigation';
+import { ShareButton } from '@/components/ShareButton';
 
 interface Post {
   id: string;
@@ -147,10 +148,11 @@ export default function BlogPostPage() {
                   day: 'numeric'
                 })}</span>
               </div>
-              <Button variant="ghost" size="sm">
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
+              <ShareButton 
+                title={post.title}
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                description={post.excerpt}
+              />
             </div>
           </div>
 
@@ -162,9 +164,10 @@ export default function BlogPostPage() {
           {/* Content */}
           <div className="prose prose-lg max-w-none">
             {post.content ? (
-              <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-                {post.content}
-              </div>
+              <div 
+                className="text-gray-700 leading-relaxed prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: post.content }}
+              />
             ) : (
               <p className="text-gray-500">No content available</p>
             )}

@@ -221,16 +221,10 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            <Button asChild className="bg-green-600 hover:bg-green-700 text-white">
-              <Link href="/admin">Admin Login</Link>
-            </Button>
-          </div>
+            </div>
 
           {/* Mobile Navigation */}
           <div className="lg:hidden flex items-center space-x-4">
-            <Button asChild variant="outline" size="sm" className="hidden sm:flex border-green-600 text-green-600 hover:bg-green-50">
-              <Link href="/admin">Admin</Link>
-            </Button>
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm" className="hover:bg-green-50">
@@ -346,22 +340,6 @@ export default function Navigation() {
                       </Link>
                     );
                   })}
-                </div>
-
-                {/* Admin Login Section */}
-                <div className="mt-8 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-100">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <Shield className="h-5 w-5 text-green-600" />
-                    <span className="text-sm font-semibold text-gray-900">Admin Access</span>
-                  </div>
-                  <p className="text-xs text-gray-600 mb-4">
-                    Access the admin dashboard to manage content and view analytics.
-                  </p>
-                  <Button asChild className="w-full bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all duration-200">
-                    <Link href="/admin" onClick={() => setIsOpen(false)}>
-                      Admin Login
-                    </Link>
-                  </Button>
                 </div>
 
                 {/* Footer Info */}

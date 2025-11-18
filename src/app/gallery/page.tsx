@@ -82,14 +82,14 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navigation />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-16">
+      <section className="text-white py-16" style={{ backgroundColor: 'rgb(0,159,86)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Event Gallery</h1>
-          <p className="text-xl text-blue-100">
+          <p className="text-xl text-white/90">
             Explore photos from our campaigns, meetings, and events
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function GalleryPage() {
         {/* Gallery Grid */}
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderBottomColor: 'rgb(0,159,86)' }}></div>
           </div>
         ) : filteredGalleries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -153,7 +153,7 @@ export default function GalleryPage() {
                   <div className="space-y-2 mb-4">
                     {gallery.eventDate && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Calendar className="h-4 w-4 text-blue-600" />
+                        <Calendar className="h-4 w-4" style={{ color: 'rgb(0,159,86)' }} />
                         {new Date(gallery.eventDate).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'long',
@@ -163,13 +163,13 @@ export default function GalleryPage() {
                     )}
                     {gallery.location && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4 text-blue-600" />
+                        <MapPin className="h-4 w-4" style={{ color: 'rgb(0,159,86)' }} />
                         {gallery.location}
                       </div>
                     )}
                   </div>
 
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  <Button className="w-full text-white" style={{ backgroundColor: 'rgb(0,159,86)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgb(0, 130, 70)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgb(0,159,86)'}>
                     View Gallery
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>

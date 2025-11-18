@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Mail,
   Phone,
@@ -21,51 +22,150 @@ import {
   ArrowRight,
   Star,
   Globe,
-  Calendar
+  Calendar,
+  Loader2
 } from 'lucide-react';
+import { NIGERIAN_STATES } from '@/lib/nigerian-states';
+
+const TRANSPORT_MODES = [
+  'Road Transport',
+  'Rail Transport',
+  'Air Transport',
+  'Water Transport',
+  'Pipeline Transport',
+  'Non-Motorized Transport',
+  'Others',
+];
+
+interface FormData {
+  fullName: string;
+  gender: string;
+  email: string;
+  phoneNumber: string;
+  stateOfOrigin: string;
+  lga: string;
+  modesOfTransport: string[];
+}
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
+  const [formData, setFormData] = useState<FormData>({
+    fullName: '',
+    gender: '',
     email: '',
-    phone: '',
-    subject: '',
-    message: '',
-    membershipType: ''
+    phoneNumber: '',
+    stateOfOrigin: '',
+    lga: '',
+    modesOfTransport: [],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error for this field
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleTransportModeChange = (mode: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      modesOfTransport: checked
+        ? [...prev.modesOfTransport, mode]
+        : prev.modesOfTransport.filter(m => m !== mode),
     }));
+    if (errors.modesOfTransport) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.modesOfTransport;
+        return newErrors;
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    }
+    if (!formData.gender) {
+      newErrors.gender = 'Gender is required';
+    }
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    }
+    if (!/^\+?[\d\s\-()]{10,}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = 'Please enter a valid phone number';
+    }
+    if (!formData.stateOfOrigin) {
+      newErrors.stateOfOrigin = 'State of origin is required';
+    }
+    if (!formData.lga) {
+      newErrors.lga = 'LGA is required';
+    }
+    if (formData.modesOfTransport.length === 0) {
+      newErrors.modesOfTransport = 'Please select at least one mode of transport';
+    }
+    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
-
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: '',
-        membershipType: ''
+    try {
+      const response = await fetch('/api/movement-members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-    }, 3000);
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        setFormData({
+          fullName: '',
+          gender: '',
+          email: '',
+          phoneNumber: '',
+          stateOfOrigin: '',
+          lga: '',
+          modesOfTransport: [],
+        });
+        setTimeout(() => {
+          setIsSubmitted(false);
+        }, 3000);
+      } else {
+        const error = await response.json();
+        setErrors({ submit: error.error || 'Failed to submit form' });
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setErrors({ submit: 'An error occurred. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const selectedState = NIGERIAN_STATES.find(s => s.name === formData.stateOfOrigin);
+  const lgas = selectedState?.lgas || [];
 
   const contactInfo = [
     {
@@ -231,86 +331,140 @@ export default function ContactPage() {
           ) : (
             <Card className="p-8">
               <CardContent className="p-0">
+                {errors.submit && (
+                  <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded mb-6">
+                    {errors.submit}
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="name">Full Name *</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email Address *</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        required
-                        className="mt-1"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="membershipType">Membership Type</Label>
-                      <select
-                        id="membershipType"
-                        name="membershipType"
-                        value={formData.membershipType}
-                        onChange={handleInputChange}
-                        className="w-full mt-1 p-2 border rounded-md"
-                      >
-                        <option value="">Select membership type</option>
-                        {membershipTypes.map((type) => (
-                          <option key={type} value={type}>{type}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
+                  {/* Full Name */}
                   <div>
-                    <Label htmlFor="subject">Subject *</Label>
+                    <Label htmlFor="fullName" className="text-sm font-medium">
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleInputChange}
-                      required
-                      className="mt-1"
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      placeholder="Enter your full name"
+                      className={errors.fullName ? 'border-red-500 mt-1' : 'mt-1'}
                     />
+                    {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
                   </div>
 
+                  {/* Gender */}
                   <div>
-                    <Label htmlFor="message">Message *</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      required
-                      rows={6}
-                      className="mt-1"
-                    />
+                    <Label htmlFor="gender" className="text-sm font-medium">
+                      Gender <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={formData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                      <SelectTrigger className={errors.gender ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
                   </div>
 
+                  {/* Email Address */}
+                  <div>
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      placeholder="Enter your email (optional)"
+                      className={errors.email ? 'border-red-500 mt-1' : 'mt-1'}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  </div>
+
+                  {/* Phone Number */}
+                  <div>
+                    <Label htmlFor="phoneNumber" className="text-sm font-medium">
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="phoneNumber"
+                      value={formData.phoneNumber}
+                      onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                      placeholder="Enter your phone number"
+                      className={errors.phoneNumber ? 'border-red-500 mt-1' : 'mt-1'}
+                    />
+                    {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
+                  </div>
+
+                  {/* State of Origin */}
+                  <div>
+                    <Label htmlFor="stateOfOrigin" className="text-sm font-medium">
+                      State of Origin <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={formData.stateOfOrigin} onValueChange={(value) => handleInputChange('stateOfOrigin', value)}>
+                      <SelectTrigger className={errors.stateOfOrigin ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NIGERIAN_STATES.map((state) => (
+                          <SelectItem key={state.name} value={state.name}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.stateOfOrigin && <p className="text-red-500 text-sm mt-1">{errors.stateOfOrigin}</p>}
+                  </div>
+
+                  {/* LGA */}
+                  <div>
+                    <Label htmlFor="lga" className="text-sm font-medium">
+                      Local Government Area (LGA) <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={formData.lga} onValueChange={(value) => handleInputChange('lga', value)} disabled={!formData.stateOfOrigin}>
+                      <SelectTrigger className={errors.lga ? 'border-red-500' : ''}>
+                        <SelectValue placeholder={formData.stateOfOrigin ? 'Select LGA' : 'Select state first'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lgas.map((lga) => (
+                          <SelectItem key={lga} value={lga}>
+                            {lga}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.lga && <p className="text-red-500 text-sm mt-1">{errors.lga}</p>}
+                  </div>
+
+                  {/* Modes of Transport */}
+                  <div>
+                    <Label className="text-sm font-medium">
+                      Select Modes of Transport <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="space-y-3 mt-3">
+                      {TRANSPORT_MODES.map((mode) => (
+                        <div key={mode} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={mode}
+                            checked={formData.modesOfTransport.includes(mode)}
+                            onCheckedChange={(checked) => handleTransportModeChange(mode, checked as boolean)}
+                          />
+                          <Label htmlFor={mode} className="font-normal cursor-pointer">
+                            {mode}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    {errors.modesOfTransport && <p className="text-red-500 text-sm mt-2">{errors.modesOfTransport}</p>}
+                  </div>
+
+                  {/* Submit Button */}
                   <Button
                     type="submit"
                     disabled={isSubmitting}
@@ -318,12 +472,12 @@ export default function ContactPage() {
                   >
                     {isSubmitting ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Sending...
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Submitting...
                       </>
                     ) : (
                       <>
-                        Send Message <Send className="ml-2 h-4 w-4" />
+                        Join Movement <Send className="ml-2 h-4 w-4" />
                       </>
                     )}
                   </Button>

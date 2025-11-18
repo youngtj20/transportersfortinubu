@@ -18,17 +18,68 @@ import {
   Handshake,
   Truck,
   Bus,
-  Plane
+  Plane,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Send,
+  X,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { NIGERIAN_STATES } from '@/lib/nigerian-states';
+
+const TRANSPORT_MODES = [
+  'Road Transport',
+  'Rail Transport',
+  'Air Transport',
+  'Water Transport',
+  'Pipeline Transport',
+  'Non-Motorized Transport',
+  'Others',
+];
+
+interface JoinFormData {
+  fullName: string;
+  gender: string;
+  email: string;
+  phoneNumber: string;
+  stateOfOrigin: string;
+  lga: string;
+  modesOfTransport: string[];
+}
 
 export default function HomePage() {
   const [stats, setStats] = useState([
     { value: 0, label: 'Transport Workers', target: 50000, suffix: '+' },
-    { value: 0, label: 'States Covered', target: 36, suffix: '' },
+    { value: 0, label: 'States Covered', target: 25, suffix: '+' },
     { value: 0, label: 'Support Centers', target: 774, suffix: '+' },
     { value: 0, label: 'Years of Excellence', target: 2027, suffix: '' }
   ]);
+  const [socialLinks, setSocialLinks] = useState({
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+  });
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [joinFormData, setJoinFormData] = useState<JoinFormData>({
+    fullName: '',
+    gender: '',
+    email: '',
+    phoneNumber: '',
+    stateOfOrigin: '',
+    lga: '',
+    modesOfTransport: [],
+  });
+  const [joinFormErrors, setJoinFormErrors] = useState<Record<string, string>>({});
+  const [isSubmittingJoinForm, setIsSubmittingJoinForm] = useState(false);
+  const [joinFormSubmitted, setJoinFormSubmitted] = useState(false);
   // Add state to track if component has mounted
   const [isMounted, setIsMounted] = useState(false);
 
@@ -39,18 +90,51 @@ export default function HomePage() {
     const duration = 2000;
     const steps = 60;
     const increment = duration / steps;
+    let currentStep = 0;
 
     const timer = setInterval(() => {
+      currentStep++;
       setStats(prevStats => 
         prevStats.map(stat => {
-          const progress = Math.min(stat.value + (stat.target / steps), stat.target);
-          return { ...stat, value: Math.floor(progress) };
+          const progress = (stat.target / steps) * currentStep;
+          return { ...stat, value: Math.floor(Math.min(progress, stat.target)) };
         })
       );
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+      }
     }, increment);
 
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchSocialLinks();
+  }, []);
+
+  const fetchSocialLinks = async () => {
+    try {
+      const response = await fetch('/api/settings');
+      if (response.ok) {
+        const settings = await response.json();
+        
+        const facebookSetting = settings.find((s: any) => s.key === 'socialFacebook');
+        const twitterSetting = settings.find((s: any) => s.key === 'socialTwitter');
+        const instagramSetting = settings.find((s: any) => s.key === 'socialInstagram');
+        const linkedinSetting = settings.find((s: any) => s.key === 'socialLinkedIn');
+        
+        setSocialLinks({
+          facebook: facebookSetting?.value || '',
+          twitter: twitterSetting?.value || '',
+          instagram: instagramSetting?.value || '',
+          linkedin: linkedinSetting?.value || '',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching social links:', error);
+    }
+  };
 
   const features = [
     {
@@ -143,10 +227,12 @@ export default function HomePage() {
                   Learn More <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 text-lg shadow-lg font-semibold">
-                <Link href="/contact">
-                  Join Us Today
-                </Link>
+              <Button 
+                onClick={() => setIsJoinModalOpen(true)}
+                size="lg" 
+                className="bg-white text-green-600 hover:bg-gray-100 px-8 py-4 text-lg shadow-lg font-semibold"
+              >
+                Join Us Today
               </Button>
             </div>
           </div>
@@ -298,9 +384,60 @@ export default function HomePage() {
                   <span className="block text-sm text-green-400">2027</span>
                 </div>
               </div>
-              <p className="text-gray-400">
+              <p className="text-gray-400 mb-6">
                 Supporting progressive leadership for Nigeria's transportation future.
               </p>
+              
+              {/* Social Media Links */}
+              <div>
+                <p className="text-sm font-semibold text-gray-300 mb-4">Follow Us</p>
+                <div className="flex flex-wrap gap-3">
+                  {socialLinks.facebook && (
+                    <a 
+                      href={socialLinks.facebook} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="group flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-green-600 transition-all duration-300 transform hover:scale-110"
+                      title="Follow us on Facebook"
+                    >
+                      <Facebook className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
+                    </a>
+                  )}
+                  {socialLinks.twitter && (
+                    <a 
+                      href={socialLinks.twitter} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="group flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-500 transition-all duration-300 transform hover:scale-110"
+                      title="Follow us on Twitter"
+                    >
+                      <Twitter className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
+                    </a>
+                  )}
+                  {socialLinks.instagram && (
+                    <a 
+                      href={socialLinks.instagram} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="group flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-pink-600 transition-all duration-300 transform hover:scale-110"
+                      title="Follow us on Instagram"
+                    >
+                      <Instagram className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
+                    </a>
+                  )}
+                  {socialLinks.linkedin && (
+                    <a 
+                      href={socialLinks.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="group flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-blue-700 transition-all duration-300 transform hover:scale-110"
+                      title="Follow us on LinkedIn"
+                    >
+                      <Linkedin className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
             
             <div>
@@ -342,6 +479,304 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Join Modal */}
+      {isJoinModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full my-8">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">Join Our Movement</h2>
+              <button
+                onClick={() => setIsJoinModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+              {joinFormSubmitted ? (
+                <div className="text-center py-12">
+                  <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Thank You!</h3>
+                  <p className="text-gray-700 mb-6">
+                    Your membership application has been received successfully. We'll get back to you soon.
+                  </p>
+                  <Button
+                    onClick={() => {
+                      setIsJoinModalOpen(false);
+                      setJoinFormSubmitted(false);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    Close
+                  </Button>
+                </div>
+              ) : (
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  
+                  // Validation
+                  const newErrors: Record<string, string> = {};
+                  if (!joinFormData.fullName.trim()) newErrors.fullName = 'Full name is required';
+                  if (!joinFormData.gender) newErrors.gender = 'Gender is required';
+                  if (!joinFormData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
+                  if (!/^\+?[\d\s\-()]{10,}$/.test(joinFormData.phoneNumber)) newErrors.phoneNumber = 'Please enter a valid phone number';
+                  if (!joinFormData.stateOfOrigin) newErrors.stateOfOrigin = 'State of origin is required';
+                  if (!joinFormData.lga) newErrors.lga = 'LGA is required';
+                  if (joinFormData.modesOfTransport.length === 0) newErrors.modesOfTransport = 'Please select at least one mode of transport';
+                  if (joinFormData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(joinFormData.email)) newErrors.email = 'Please enter a valid email address';
+
+                  if (Object.keys(newErrors).length > 0) {
+                    setJoinFormErrors(newErrors);
+                    return;
+                  }
+
+                  setIsSubmittingJoinForm(true);
+                  try {
+                    const response = await fetch('/api/movement-members', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(joinFormData),
+                    });
+
+                    if (response.ok) {
+                      setJoinFormSubmitted(true);
+                      setJoinFormData({
+                        fullName: '',
+                        gender: '',
+                        email: '',
+                        phoneNumber: '',
+                        stateOfOrigin: '',
+                        lga: '',
+                        modesOfTransport: [],
+                      });
+                      setTimeout(() => {
+                        setIsJoinModalOpen(false);
+                        setJoinFormSubmitted(false);
+                      }, 2000);
+                    } else {
+                      const error = await response.json();
+                      setJoinFormErrors({ submit: error.error || 'Failed to submit form' });
+                    }
+                  } catch (error) {
+                    console.error('Error submitting form:', error);
+                    setJoinFormErrors({ submit: 'An error occurred. Please try again.' });
+                  } finally {
+                    setIsSubmittingJoinForm(false);
+                  }
+                }} className="space-y-4">
+                  {joinFormErrors.submit && (
+                    <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+                      {joinFormErrors.submit}
+                    </div>
+                  )}
+
+                  {/* Full Name */}
+                  <div>
+                    <Label htmlFor="modal-fullName" className="text-sm font-medium">
+                      Full Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="modal-fullName"
+                      value={joinFormData.fullName}
+                      onChange={(e) => {
+                        setJoinFormData({ ...joinFormData, fullName: e.target.value });
+                        if (joinFormErrors.fullName) {
+                          const newErrors = { ...joinFormErrors };
+                          delete newErrors.fullName;
+                          setJoinFormErrors(newErrors);
+                        }
+                      }}
+                      placeholder="Enter your full name"
+                      className={joinFormErrors.fullName ? 'border-red-500 mt-1' : 'mt-1'}
+                    />
+                    {joinFormErrors.fullName && <p className="text-red-500 text-sm mt-1">{joinFormErrors.fullName}</p>}
+                  </div>
+
+                  {/* Gender */}
+                  <div>
+                    <Label htmlFor="modal-gender" className="text-sm font-medium">
+                      Gender <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={joinFormData.gender} onValueChange={(value) => {
+                      setJoinFormData({ ...joinFormData, gender: value });
+                      if (joinFormErrors.gender) {
+                        const newErrors = { ...joinFormErrors };
+                        delete newErrors.gender;
+                        setJoinFormErrors(newErrors);
+                      }
+                    }}>
+                      <SelectTrigger className={joinFormErrors.gender ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {joinFormErrors.gender && <p className="text-red-500 text-sm mt-1">{joinFormErrors.gender}</p>}
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <Label htmlFor="modal-email" className="text-sm font-medium">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="modal-email"
+                      type="email"
+                      value={joinFormData.email}
+                      onChange={(e) => {
+                        setJoinFormData({ ...joinFormData, email: e.target.value });
+                        if (joinFormErrors.email) {
+                          const newErrors = { ...joinFormErrors };
+                          delete newErrors.email;
+                          setJoinFormErrors(newErrors);
+                        }
+                      }}
+                      placeholder="Enter your email (optional)"
+                      className={joinFormErrors.email ? 'border-red-500 mt-1' : 'mt-1'}
+                    />
+                    {joinFormErrors.email && <p className="text-red-500 text-sm mt-1">{joinFormErrors.email}</p>}
+                  </div>
+
+                  {/* Phone Number */}
+                  <div>
+                    <Label htmlFor="modal-phone" className="text-sm font-medium">
+                      Phone Number <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="modal-phone"
+                      value={joinFormData.phoneNumber}
+                      onChange={(e) => {
+                        setJoinFormData({ ...joinFormData, phoneNumber: e.target.value });
+                        if (joinFormErrors.phoneNumber) {
+                          const newErrors = { ...joinFormErrors };
+                          delete newErrors.phoneNumber;
+                          setJoinFormErrors(newErrors);
+                        }
+                      }}
+                      placeholder="Enter your phone number"
+                      className={joinFormErrors.phoneNumber ? 'border-red-500 mt-1' : 'mt-1'}
+                    />
+                    {joinFormErrors.phoneNumber && <p className="text-red-500 text-sm mt-1">{joinFormErrors.phoneNumber}</p>}
+                  </div>
+
+                  {/* State */}
+                  <div>
+                    <Label htmlFor="modal-state" className="text-sm font-medium">
+                      State of Origin <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={joinFormData.stateOfOrigin} onValueChange={(value) => {
+                      setJoinFormData({ ...joinFormData, stateOfOrigin: value, lga: '' });
+                      if (joinFormErrors.stateOfOrigin) {
+                        const newErrors = { ...joinFormErrors };
+                        delete newErrors.stateOfOrigin;
+                        setJoinFormErrors(newErrors);
+                      }
+                    }}>
+                      <SelectTrigger className={joinFormErrors.stateOfOrigin ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NIGERIAN_STATES.map((state) => (
+                          <SelectItem key={state.name} value={state.name}>
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {joinFormErrors.stateOfOrigin && <p className="text-red-500 text-sm mt-1">{joinFormErrors.stateOfOrigin}</p>}
+                  </div>
+
+                  {/* LGA */}
+                  <div>
+                    <Label htmlFor="modal-lga" className="text-sm font-medium">
+                      Local Government Area (LGA) <span className="text-red-500">*</span>
+                    </Label>
+                    <Select value={joinFormData.lga} onValueChange={(value) => {
+                      setJoinFormData({ ...joinFormData, lga: value });
+                      if (joinFormErrors.lga) {
+                        const newErrors = { ...joinFormErrors };
+                        delete newErrors.lga;
+                        setJoinFormErrors(newErrors);
+                      }
+                    }} disabled={!joinFormData.stateOfOrigin}>
+                      <SelectTrigger className={joinFormErrors.lga ? 'border-red-500' : ''}>
+                        <SelectValue placeholder={joinFormData.stateOfOrigin ? 'Select LGA' : 'Select state first'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {NIGERIAN_STATES.find(s => s.name === joinFormData.stateOfOrigin)?.lgas.map((lga) => (
+                          <SelectItem key={lga} value={lga}>
+                            {lga}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {joinFormErrors.lga && <p className="text-red-500 text-sm mt-1">{joinFormErrors.lga}</p>}
+                  </div>
+
+                  {/* Transport Modes */}
+                  <div>
+                    <Label className="text-sm font-medium">
+                      Select Modes of Transport <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="space-y-2 mt-2">
+                      {TRANSPORT_MODES.map((mode) => (
+                        <div key={mode} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`modal-${mode}`}
+                            checked={joinFormData.modesOfTransport.includes(mode)}
+                            onCheckedChange={(checked) => {
+                              setJoinFormData({
+                                ...joinFormData,
+                                modesOfTransport: checked
+                                  ? [...joinFormData.modesOfTransport, mode]
+                                  : joinFormData.modesOfTransport.filter(m => m !== mode),
+                              });
+                              if (joinFormErrors.modesOfTransport) {
+                                const newErrors = { ...joinFormErrors };
+                                delete newErrors.modesOfTransport;
+                                setJoinFormErrors(newErrors);
+                              }
+                            }}
+                          />
+                          <Label htmlFor={`modal-${mode}`} className="font-normal cursor-pointer">
+                            {mode}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                    {joinFormErrors.modesOfTransport && <p className="text-red-500 text-sm mt-2">{joinFormErrors.modesOfTransport}</p>}
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    disabled={isSubmittingJoinForm}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg mt-6"
+                  >
+                    {isSubmittingJoinForm ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        Join Movement <Send className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

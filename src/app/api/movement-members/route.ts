@@ -33,13 +33,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check for duplicate phone number
+    const existingPhoneNumber = await (db as any).movementMember.findFirst({
+      where: {
+        phoneNumber: phoneNumber.trim(),
+      },
+    })
+
+    if (existingPhoneNumber) {
+      return NextResponse.json(
+        { error: 'This phone number has already been registered. Please use a different phone number or contact support if you believe this is an error.' },
+        { status: 409 }
+      )
+    }
+
+    // Check for duplicate email (if email is provided)
+    if (email && email.trim()) {
+      const existingEmail = await (db as any).movementMember.findFirst({
+        where: {
+          email: email.trim().toLowerCase(),
+        },
+      })
+
+      if (existingEmail) {
+        return NextResponse.json(
+          { error: 'This email address has already been registered. Please use a different email or contact support if you believe this is an error.' },
+          { status: 409 }
+        )
+      }
+    }
+
     // Create movement member
     const member = await (db as any).movementMember.create({
       data: {
         fullName,
         gender,
-        email: email || null,
-        phoneNumber,
+        email: email ? email.trim().toLowerCase() : null,
+        phoneNumber: phoneNumber.trim(),
         stateOfOrigin,
         lga,
         modesOfTransport: JSON.stringify(modesOfTransport),
