@@ -33,6 +33,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { NIGERIAN_STATES } from '@/lib/nigerian-states';
+import { TrendingContent } from '@/components/TrendingContent';
 
 const TRANSPORT_MODES = [
   'Road Transport',
@@ -190,6 +191,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navigation />
+      <TrendingContent />
 
       {/* Hero Section with Image */}
       <section className="relative pt-20 pb-0 px-0 overflow-hidden">
